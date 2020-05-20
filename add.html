@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>GET VIDEO</title>
+    <meta charset="utf-8">
+    <script src="https://cdn.bootcss.com/jquery/1.9.1/jquery.js"></script>
+</head>
+
+<body>
+    <video width="200px" height="150px"></video>
+    <canvas width="200px" height="150px"></canvas>
+    <div class="video_player"> <!-- options="playerOptions" -->
+        <video id="video" width="640" height="360" src="./msr-2020-04-09T05-58-13-525Z.mp4" autobuffer> 
+            <div class="fallback"> <p>You must have an HTML5 capable browser.</p> </div> 
+          </video>
+    </div>
+    <p>
+        <!-- <button id="start">打开摄像头</button>
+        <button id="snap">截取图像</button>
+        <button id="close">关闭摄像头</button> -->
+        <button id="open"  οnclick="play()">播放摄像头</button>
+    </p>
+    <script>
+        var open = document.getElementById("open");
+        open.addEventListener('click', function () {
+            console.log('111')
+            var video = document.getElementById("video");
+            video.play();
+        });
+       window.onload = function () {
+           var canvas = document.getElementsByTagName('canvas')[0],
+               context = canvas.getContext('2d'),
+               video = document.getElementsByTagName("video")[0],
+               snap = document.getElementById("snap"),
+               close = document.getElementById("close"),
+               start = document.getElementById("start"),
+               MediaStreamTrack;
+           start.addEventListener('click', function () {
+               if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                   navigator.mediaDevices.getUserMedia({
+                       video: true,
+                       audio: true
+                   }).then(function (stream) {
+                       console.log(stream);
+                       MediaStreamTrack=typeof stream.stop==='function'?stream:stream.getTracks()[1];
+                    //    video.src=(window.URL).createObjectURL(stream);
+                    try {
+                        video.srcObject = stream;} 
+                    catch (error) {
+                        video.src = window.URL.createObjectURL(stream);}
+                    // video.srcObject = stream;
+                       video.play();
+                   }).catch(function(err){
+                       console.log(err);
+                   });
+               }else if(navigator.getMedia){
+                   navigator.getMedia({
+                       video: true
+                   }).then(function (stream) {
+                       console.log(stream);
+                       MediaStreamTrack=stream.getTracks()[1];
+                       video.src=(window.webkitURL).createObjectURL(stream);
+                       video.play();
+                   }).catch(function(err){
+                       console.log(err);
+                   });
+               }
+           });
+           snap.addEventListener('click', function () {
+               context.drawImage(video, 0, 0,200,150);
+           });
+           close.addEventListener('click', function () {
+               MediaStreamTrack && MediaStreamTrack.stop();
+           });
+       }
+    </script>
+</body>
+
+</html>
